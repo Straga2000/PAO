@@ -39,4 +39,13 @@ public class CSVIOBook extends CSVIO{
 
         return bookList;
     }
+
+    public void putBooks(ArrayList<book> bookList) throws IOException {
+        for(book newBook : bookList)
+        {
+            super.addLine(newBook.toCSVFormat());
+        }
+
+        super.writeLines();
+    }
 }

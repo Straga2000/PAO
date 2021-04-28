@@ -107,7 +107,13 @@ public class book implements Comparable<book>{
     @Override
     public String toString() {
         return "Book number #" + id + " with title \'" + title + "\' has " + numberOfPages + " pages, is written by "
-                + author + " and published at " + publisher + "\n";
+                + author + " and published at " + publisher;
+    }
+
+    public String toCSVFormat()
+    {
+        ///book name,author,genre,pages,publisher
+        return "" + title + "," + author + "," + genre + "," + numberOfPages + "," + publisher + "\n";
     }
 }
 

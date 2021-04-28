@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CSVIO {
+class CSVIO {
     private Map<String, String> line = new HashMap<>();
     private ArrayList<String> header = new ArrayList<>();
     private ArrayList<String> addLines = new ArrayList<>();
@@ -12,29 +12,29 @@ public class CSVIO {
     private String filename, headerString;
     private BufferedReader buff;
 
-    public CSVIO(String filename) throws IOException {
-
-        FileReader fileReader = new FileReader(filename);
+    CSVIO(String filename) throws IOException {
 
         this.filename = filename;
-        this.buff = new BufferedReader(fileReader);
 
         readHeader();
     }
 
-    public void readHeader() throws IOException {
-        headerString = buff.readLine();
+    private void readHeader() throws IOException {
+        this.buff = new BufferedReader(new FileReader(filename));
+
+        headerString = buff.readLine().replace("\n", "");
         for(String prop : headerString.split(","))
         {
             line.put(prop, "");
             header.add(prop);
         }
+        //System.out.println(headerString);
     }
 
-    public Map<String, String> readLine() {
+    Map<String, String> readLine() {
 
         try{
-            String newLine = buff.readLine();
+            String newLine = buff.readLine().replace("\n","");
 
             String[] propList = newLine.split(",");
             for(int i = 0; i < propList.length; i++)
@@ -49,17 +49,20 @@ public class CSVIO {
         return line;
     }
 
-    public void addLine(String props)
+    void addLine(String props)
     {
         addLines.add(props);
     }
 
-    public void writeLines() throws IOException {
+    void writeLines() throws IOException {
+
+        buff.close();
 
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filename));
-
-        bufferedWriter.write(headerString);
+        //System.out.println(headerString);
+        bufferedWriter.write(headerString + "\n");
         for(String newLine : addLines)
             bufferedWriter.write(newLine);
+        bufferedWriter.close();
     }
 }
