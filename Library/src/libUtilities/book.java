@@ -21,6 +21,10 @@ public class book implements Comparable<book>{
         counter++;
     }
 
+    public book() {
+        this.id = counter++;
+    }
+
     book searchCategory(String category)
     {
         if(genre.equals(category))
@@ -102,7 +106,8 @@ public class book implements Comparable<book>{
 
     @Override
     public String toString() {
-        return "Book number #" + id + "with title " + title + ", written by: " + author + "\n";
+        return "Book number #" + id + " with title \'" + title + "\' has " + numberOfPages + " pages, is written by "
+                + author + " and published at " + publisher + "\n";
     }
 }
 
