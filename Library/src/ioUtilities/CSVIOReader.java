@@ -6,7 +6,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 
 public class CSVIOReader extends CSVIO<reader>{
@@ -53,8 +52,8 @@ public class CSVIOReader extends CSVIO<reader>{
     }
 
     public void put(ArrayList<reader> readerList) throws IOException {
-        for(reader newBook : readerList)
-            super.addLine(newBook.toCSVFormat());
+        for(reader newReader : readerList)
+            super.addLine(newReader.toCSVFormat());
 
         super.writeLines();
     }

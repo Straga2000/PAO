@@ -154,13 +154,12 @@ public class reader {
         wishlist.add(newLog);
     }
 
-    public Boolean isSubscriptionNeededToPaid()
-    {
+    public Boolean isSubscriptionNeededToPaid() throws Exception {
         try {
             return subscription.getPayDate().before(new Date());
         }
         catch (Exception e) {
-            return false;
+            throw new Exception("Subscription is not valid");
         }
     }
 

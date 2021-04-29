@@ -1,6 +1,5 @@
 import libUtilities.*;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -30,42 +29,55 @@ public class Main {
     private static reader makeAccount(Scanner scan, library Lib) throws Exception {
         String name = scan.nextLine();
         Integer typeOfMembership = scan.nextInt();
+        scan.nextLine();
+
         Boolean isVIP = scan.nextLine().equals("NO") ? Boolean.FALSE : Boolean.TRUE;
+        //System.out.println(isVIP);
 
-        reader user = Lib.makeAccount(name, typeOfMembership, isVIP);
+        reader user = Lib.findUserByName(name);
+
+        if(user == null)
+            user = Lib.makeAccount(name, typeOfMembership, isVIP);
+        else
+            throw new Exception("User already exist");
+
         System.out.println(user.toString());
-
         return user;
     }
 
     private static reader upgradeAccount(Scanner scan, library Lib) throws Exception {
         String name = scan.nextLine();
+
         Integer typeOfMembership = scan.nextInt();
+        scan.nextLine();
+
         Boolean isVIP = scan.nextLine().equals("NO") ? Boolean.FALSE : Boolean.TRUE;
+        //System.out.println(isVIP);
 
-        for(reader user : Lib.getUsers())
-        {
-            if (user.getFullName().equals(name)) {
-                reader newUser = Lib.upgradeAccount(typeOfMembership, isVIP, user);
-                System.out.println(newUser.toString());
-                return newUser;
-            }
-        }
+        reader user = Lib.findUserByName(name);
 
-        throw new Exception("There is no user with this name.");
+        if(user != null)
+            user = Lib.upgradeAccount(typeOfMembership, isVIP, user);
+        else
+            throw new Exception("User not found");
+
+        Lib.updateUser(user);
+        System.out.println(user.toString());
+        return user;
     }
 
     private static List<reader> deleteAccount(Scanner scan, library Lib) throws Exception {
         String name = scan.nextLine();
 
-        for(reader user : Lib.getUsers())
-        {
-            if (user.getFullName().equals(name)) {
-                return Lib.deleteAccount(user);
-            }
-        }
+        reader user = Lib.findUserByName(name);
 
-        throw new Exception("There is no user with this name.");
+        if(user == null)
+            throw new Exception("User not found");
+        else
+            Lib.deleteAccount(user);
+
+        System.out.println(user.toString());
+        return Lib.getUsers();
     }
 
 
@@ -73,36 +85,33 @@ public class Main {
         String name = scan.nextLine();
         Boolean confirmation = scan.nextLine().equals("NO") ? Boolean.FALSE : Boolean.TRUE;
 
+        reader user = Lib.findUserByName(name);
+
         if (confirmation){
 
-            for(reader user : Lib.getUsers())
-            {
-                if (user.getFullName().equals(name))
-                    return Lib.cancelSubscription(user);
-            }
-
-            throw new Exception("There is no user with this name.");
+            if(user == null)
+                throw new Exception("User not found");
+            else
+                Lib.cancelSubscription(user);
         }
 
-        return null;
+        return user;
     }
 
     private static Boolean isSubscriptionPaid(Scanner scan, library Lib) throws Exception {
         String name = scan.nextLine();
         Boolean confirmation = scan.nextLine().equals("NO") ? Boolean.FALSE : Boolean.TRUE;
 
+        reader user = Lib.findUserByName(name);
+
         if (confirmation){
-
-            for(reader user : Lib.getUsers())
-            {
-                if (user.getFullName().equals(name))
-                    return Lib.isSubscriptionPaid(user);
-            }
-
-            throw new Exception("There is no user with this name.");
+            if(user == null)
+                throw new Exception("User not found");
+            else
+                return Lib.isSubscriptionPaid(user);
         }
 
-        return null;
+        throw new Exception("Subscription not found");
     }
 
     private static List<book> orderBooksByTitle(library Lib)
@@ -157,17 +166,16 @@ public class Main {
         String author = scan.nextLine();
         String publisher = scan.nextLine();
         String genre = scan.nextLine();
+
         Integer number = scan.nextInt();
         scan.nextLine();
 
         book newBook = new book(bookName, author, publisher, genre, number);
+        book findBook = Lib.findBookByObject(newBook);
 
-        for(book b : Lib.getBooks())
-        {
-            if(b.equals(newBook))
-                throw new Exception("This book already exists");
-        }
-
-        return Lib.addBook(newBook);
+        if(findBook == null)
+            return Lib.addBook(newBook);
+        else
+            throw  new Exception("Book already exists");
     }
 }

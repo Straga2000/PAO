@@ -1,4 +1,5 @@
 package libUtilities;
+import javax.print.DocFlavor;
 import java.util.*;
 
 public class library {
@@ -7,6 +8,7 @@ public class library {
     private List<book> books = new ArrayList<>();
     private Map<String, section> sectionByGenre = new HashMap<String, section>();
     private Map<String, author> sectionByAuthor = new HashMap<String, author>();
+    private List<action> controlLog = new ArrayList<>();
 
     ////we need to create a map of author name with his books
     public Map<String, author> divideBooksByAuthor(List<book> listOfBooks)
@@ -82,6 +84,10 @@ public class library {
         this.users = users;
     }
 
+    public List<action> getControlLog() {
+        return controlLog;
+    }
+
     public List<book> searchCategory(String category, List<book> listOfBooks)
     {
         List<book> newListOfBooks = new ArrayList<book>();
@@ -92,18 +98,22 @@ public class library {
                 newListOfBooks.add(result);
         }
 
+        addAction("search category " + category);
+
         return newListOfBooks;
     }
 
     public List<book> searchPublisher(String publisher, List<book> listOfBooks)
     {
-        List<book> newListOfBooks = new ArrayList<book>();
+        List<book> newListOfBooks = new ArrayList<>();
         for(book x : listOfBooks)
         {
             book result = x.searchPublisher(publisher);
             if(result != null)
                 newListOfBooks.add(result);
         }
+
+        addAction("search publisher " + publisher);
 
         return newListOfBooks;
     }
@@ -112,24 +122,29 @@ public class library {
     ///membership 1,2,3
     public reader makeAccount(String name,Integer typeOfMembership, Boolean isVIP) throws Exception {
 
-        reader newReader = new reader(name, new membership());
-        newReader.setSubscription(newReader.createSubscription(typeOfMembership, isVIP));
+        reader newReader = new reader(name);
+        newReader.createSubscription(typeOfMembership, isVIP);
         users.add(newReader);
+
+        addAction("make account " + name);
 
         return newReader;
     }
 
     public reader upgradeAccount(Integer typeOfMembership, Boolean isVIP, reader user) throws Exception {
 
-        membership subscription = user.upgradeSubscription(typeOfMembership, isVIP);
-        user.setSubscription(subscription);
+        user.upgradeSubscription(typeOfMembership, isVIP);
+        addAction("upgrade account " + user.getFullName());
+
         return user;
     }
 
     public reader cancelSubscription(reader user) throws Exception {
 
-                user.cancelSubscription();
-                return user;
+        user.cancelSubscription();
+        addAction("cancel subscription " + user.getFullName());
+
+        return user;
     }
 
     public boolean isSubscriptionPaid(reader user) throws Exception {
@@ -139,6 +154,7 @@ public class library {
     public List<reader> deleteAccount(reader user)
     {
         this.users.remove(user);
+        addAction("delete account " + user.getFullName());
         return users;
     }
 
@@ -151,12 +167,16 @@ public class library {
     public List<book> addBook(book addedBook)
     {
         books.add(addedBook);
+        addAction("add book " + addedBook.getTitle());
+
         return books;
     }
 
     public List<book> deleteBook(book deletedBook)
     {
         books.remove(deletedBook);
+        addAction("delete book " + deletedBook.getTitle());
+
         return books;
     }
 
@@ -166,8 +186,43 @@ public class library {
         return books;
     }
 
-//    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//    Date date = new Date();
+    public reader findUserByName(String name)
+    {
+        for(reader searchReader : users)
+        {
+            if(searchReader.getFullName().equals(name))
+                return searchReader;
+        }
 
+        return null;
+    }
 
+    public reader updateUser(reader user)
+    {
+        for(int i = 0; i < users.size(); i++)
+            if(users.get(i).getFullName().equals(user.getFullName()))
+            {
+                users.set(i, user);
+                return user;
+            }
+
+        return null;
+    }
+
+    public book findBookByObject(book findBook)
+    {
+        for(book newBook : books)
+        {
+            if(newBook.equals(findBook))
+                return findBook;
+        }
+
+        return null;
+    }
+
+    public List<action> addAction(String actionName)
+    {
+        controlLog.add(new action(actionName));
+        return controlLog;
+    }
 }
