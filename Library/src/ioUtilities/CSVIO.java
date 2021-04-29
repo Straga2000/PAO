@@ -1,10 +1,11 @@
 package ioUtilities;
 import java.io.*;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-class CSVIO {
+abstract class CSVIO<T> {
     private Map<String, String> line = new HashMap<>();
     private ArrayList<String> header = new ArrayList<>();
     private ArrayList<String> addLines = new ArrayList<>();
@@ -65,4 +66,7 @@ class CSVIO {
             bufferedWriter.write(newLine);
         bufferedWriter.close();
     }
+
+    public abstract ArrayList<T> get() throws ParseException, IOException;
+    public abstract void put(ArrayList<T> list) throws IOException;
 }

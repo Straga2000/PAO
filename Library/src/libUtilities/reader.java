@@ -1,6 +1,7 @@
 package libUtilities;
 
-import java.util.Arrays;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,15 +12,19 @@ public class reader {
     private Integer id;
 
     private String fullName;
-    private membership subscription;
     private List<historyLog> history;
     private List<historyLog> wishlist;
 
-    public reader(String fullName, membership subscription) {
+    private membership subscription = membership.getInstance();
+
+    public reader(String fullName) {
         this.id = counter;
         this.fullName = fullName;
-        this.subscription = subscription;
+        counter++;
+    }
 
+    public reader(){
+        this.id = counter;
         counter++;
     }
 
@@ -43,10 +48,6 @@ public class reader {
         return subscription;
     }
 
-    public void setSubscription(membership subscription) {
-        this.subscription = subscription;
-    }
-
     public List<historyLog> getWishlist() {
         return wishlist;
     }
@@ -61,11 +62,31 @@ public class reader {
 
     @Override
     public String toString() {
-        return fullName + " can borrow " + subscription.getMaxBorrowed() + " from " + subscription.getStartMembership()
-                + " to " + subscription.getFinishMemebership() + " at a cost of " + subscription.getPriceMembership() + "$.";
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+
+        return "" + fullName + " can borrow " + subscription.getMaxBorrowed() + " from " +
+                dateFormat.format(subscription.getStartMembership()) + " to " +
+                dateFormat.format(subscription.getFinishMembership()) + " at a cost of " +
+                subscription.getPriceMembership() + "$.";
     }
 
-    public membership createSubscription(Integer typeMembership, Boolean isVIP) throws Exception {
+    public String toCSVFormat()
+    {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+
+        ///name,max borrowed,start membership,finish membership,price,is VIP,pay date
+        return "" + fullName + "," +subscription.getMaxBorrowed() + "," + subscription.getStartMembership() + "," +
+               dateFormat.format(subscription.getFinishMembership()) + "," + dateFormat.format(subscription.getPriceMembership())
+               + " " + subscription.getVIP() + " " + dateFormat.format(subscription.getPayDate()) + "\n";
+    }
+
+    public void setAll(Date startMembership, Date finishMembership, Integer maxBorrowed, Integer priceMembership,
+                       Boolean isVIP, Date payDate) {
+        subscription.setAll(startMembership, finishMembership, maxBorrowed, priceMembership, isVIP, payDate);
+    }
+
+    private Integer[] chooseMembership(Integer typeMembership) throws Exception {
         int maxBorrowed, priceMembership;
 
         switch (typeMembership)
@@ -85,6 +106,14 @@ public class reader {
             default:
                 throw new Exception("There is no subscription of this type");
         }
+
+        return new Integer[]{maxBorrowed, priceMembership};
+    }
+
+    public membership createSubscription(Integer typeMembership, Boolean isVIP) throws Exception {
+
+        membership.getInstance();
+        Integer[] pair = chooseMembership(typeMembership);
 
         Date dateStart = new Date();
 
@@ -94,34 +123,25 @@ public class reader {
 
         Date dateFinish = calendar.getTime();
 
-        return new membership(dateStart, dateFinish, maxBorrowed, priceMembership, isVIP);
+        //setAll(Date startMembership, Date finishMembership, Integer maxBorrowed, Integer priceMembership,Boolean isVIP, Date payDate)
+        subscription.setAll(dateStart, dateFinish, pair[0], pair[1], isVIP, dateFinish);
+        return subscription;
     }
 
     public membership upgradeSubscription(Integer typeMembership, Boolean isVIP) throws Exception {
-        int maxBorrowed, priceMembership;
 
-        switch (typeMembership)
-        {
-            case 1:
-                maxBorrowed = 3;
-                priceMembership = 20;
-                break;
-            case 2:
-                maxBorrowed = 5;
-                priceMembership = 40;
-                break;
-            case 3:
-                maxBorrowed = 10;
-                priceMembership = 50;
-                break;
-            default:
-                throw new Exception("There is no subscription of this type");
+        try{
+            Integer[] pair = chooseMembership(typeMembership);
+
+            Date dateStart = this.subscription.getStartMembership();
+            Date dateFinish = this.subscription.getFinishMembership();
+
+            subscription.setAll(dateStart, dateFinish, pair[0], pair[1], isVIP, dateFinish);
+            return subscription;
         }
-
-        Date dateStart = this.subscription.getStartMembership();
-        Date dateFinish = this.subscription.getFinishMemebership();
-
-        return new membership(dateStart, dateFinish, maxBorrowed, priceMembership, isVIP);
+        catch (Exception e) {
+            return createSubscription(typeMembership, isVIP);
+        }
     }
 
     public void cancelSubscription()
@@ -136,7 +156,12 @@ public class reader {
 
     public Boolean isSubscriptionNeededToPaid()
     {
-           return subscription.getPayDate().before(new Date());
+        try {
+            return subscription.getPayDate().before(new Date());
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
     public List<historyLog> addBookToHistory(book newBook)
@@ -149,6 +174,7 @@ public class reader {
 }
 
 class historyLog{
+
     private Date borrowedDate;
     private book borrowedBook;
 
@@ -176,38 +202,39 @@ class historyLog{
 
 class membership
 {
+
+    private static membership instance;
+
     private Date startMembership;
-    private Date finishMemebership;
+    private Date finishMembership;
     private Integer maxBorrowed;
     private Integer priceMembership;
     private Boolean isVIP;
     private Date payDate;
 
-    public membership()
+    public static membership getInstance()
     {
-
-        startMembership = new Date();
-
-        Calendar calendar =  Calendar.getInstance();
-        calendar.setTime(startMembership);
-        calendar.add(Calendar.MONTH, 1);
-
-        finishMemebership = calendar.getTime();
-        payDate = finishMemebership;
-
-        maxBorrowed = 0;
-        priceMembership = 0;
-        isVIP = Boolean.FALSE;
-
-
+        if(instance == null)    {
+            instance = new membership();
+        }
+        return instance;
     }
 
-    public membership(Date startMembership, Date finishMemebership, Integer maxBorrowed, Integer priceMembership, Boolean isVIP) {
+    private membership() {
+        setAll(null, null,0, 0, Boolean.FALSE, null);
+    }
+
+
+    public void setAll(Date startMembership, Date finishMembership, Integer maxBorrowed, Integer priceMembership,
+                       Boolean isVIP, Date payDate){
         this.startMembership = startMembership;
-        this.finishMemebership = finishMemebership;
+        this.finishMembership = finishMembership;
         this.maxBorrowed = maxBorrowed;
         this.priceMembership = priceMembership;
         this.isVIP = isVIP;
+
+        if(payDate != null)
+            this.payDate = payDate;
     }
 
     public Date getPayDate() {
@@ -222,8 +249,8 @@ class membership
         return startMembership;
     }
 
-    public Date getFinishMemebership() {
-        return finishMemebership;
+    public Date getFinishMembership() {
+        return finishMembership;
     }
 
     public Integer getMaxBorrowed() {
@@ -246,7 +273,8 @@ class membership
         this.priceMembership = priceMembership;
     }
 
-    public void setVIP(Boolean VIP) {
-        isVIP = VIP;
+    public void setVIP(Boolean isVIP) {
+        this.isVIP = isVIP;
     }
+
 }

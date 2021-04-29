@@ -9,14 +9,19 @@ public class author {
 
     private String name;
     private List<book> bookList;
+    private Integer numberOfBooks;
 
     public author(String name, List<book> bookList) {
         this.id = counter;
         this.name = name;
-        this.bookList = bookList;
+
+        if(bookList.size() != 0)
+            this.bookList = bookList;
 
         counter++;
     }
+
+    public author() {}
 
     public String getName() {
         return name;
@@ -32,5 +37,19 @@ public class author {
 
     public void setBooks(List<book> books) {
         this.bookList = books;
+    }
+
+    public Integer getNumberOfBooks() {
+        return numberOfBooks;
+    }
+
+    public void setNumberOfBooks(Integer numberOfBooks) {
+        this.numberOfBooks = numberOfBooks;
+    }
+
+    public String toCSVFormat()
+    {
+        ///name,number of books
+        return "" + name + "," + numberOfBooks + "\n";
     }
 }

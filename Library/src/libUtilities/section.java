@@ -19,6 +19,13 @@ public class section {
         counter++;
     }
 
+    public section(Integer id, String name) {
+        this.id = counter;
+        this.name = name;
+
+        counter++;
+    }
+
     public String getName() {
         return name;
     }

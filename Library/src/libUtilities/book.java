@@ -2,7 +2,7 @@ package libUtilities;
 
 import java.util.Objects;
 
-public class book implements Comparable<book>{
+public class book implements Comparable<book> {
 
     private static Integer counter = 0;
     private Integer id;

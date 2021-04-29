@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class CSVIOBook extends CSVIO{
+public class CSVIOBook extends CSVIO<book>{
     private static CSVIOBook instance;
 
     private CSVIOBook(String filename) throws IOException {
@@ -19,7 +19,7 @@ public class CSVIOBook extends CSVIO{
         return instance;
     }
 
-    public ArrayList<book> getBooks() {
+    public ArrayList<book> get() {
 
         ArrayList<book> bookList = new ArrayList<>();
         Map<String, String> bookProps = super.readLine();
@@ -40,7 +40,7 @@ public class CSVIOBook extends CSVIO{
         return bookList;
     }
 
-    public void putBooks(ArrayList<book> bookList) throws IOException {
+    public void put(ArrayList<book> bookList) throws IOException {
         for(book newBook : bookList)
         {
             super.addLine(newBook.toCSVFormat());
