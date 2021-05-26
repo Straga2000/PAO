@@ -1,10 +1,12 @@
 package IODB;
 
+import javafx.scene.control.skin.CellSkinBase;
 import libUtilities.book;
 
 import javax.swing.table.TableRowSorter;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -16,7 +18,7 @@ public class CRUDBooks extends CRUDTemplate {
     public void insertRow(book newBook) throws IllegalAccessException {
         Class usedClass = book.class;
 
-//        "INSERT INTO person(name, age) VALUES ('Irina', 22)";
+//      "INSERT INTO person(name, age) VALUES ('Irina', 22)";
         StringBuilder insertRowCommand = new StringBuilder("INSERT INTO ");
 
         insertRowCommand.append(usedClass.getSimpleName()).append("(id");
@@ -35,7 +37,11 @@ public class CRUDBooks extends CRUDTemplate {
         for(int i = 0; i < fieldArray.length; i++)
         {
             fieldArray[i].setAccessible(true);
-            insertRowCommand.append(fieldArray[i].get(newBook).toString());
+
+            if (fieldArray[i].get(newBook) instanceof String)
+                insertRowCommand.append("\'").append(fieldArray[i].get(newBook).toString()).append("\'");
+            else
+                insertRowCommand.append(fieldArray[i].get(newBook).toString());
 
             if (i != fieldArray.length - 1)
                 insertRowCommand.append(", ");
