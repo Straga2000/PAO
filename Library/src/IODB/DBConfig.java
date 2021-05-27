@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class DBConfig {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3307/lab12";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/lybrary";
     private static final String USER = "root";
-    private static final String PASSWORD = "random-pass";
+    private static final String PASSWORD = "pass-word";
 
     private static Connection databaseConnection;
 

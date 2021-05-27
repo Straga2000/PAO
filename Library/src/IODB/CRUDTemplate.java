@@ -12,40 +12,19 @@ import java.util.Map;
 
 public class CRUDTemplate {
 
-    private Map<String, String> translateToSQL = new HashMap<>();
-
-    public CRUDTemplate() {
-        this.translateToSQL.put("class java.lang.Integer", "int");
-        this.translateToSQL.put("class java.lang.String", "varchar(255)");
-        this.translateToSQL.put("interface java.util.List", "ARRAY");
-    }
-
-
-    public Map<String, String> toSQLFormat(Class cls)
-    {
-        Map<String, String> bindingMap = new HashMap<>();
-
-        Field[] fieldsName = cls.getFields();
-
-        for (Field field : fieldsName)
-        {
-            bindingMap.put(field.getName(), translateToSQL.get(field.getType().toString()));
-        }
-
-        return bindingMap;
-    }
+    public CRUDTemplate() {}
 
     public void createTable(Class cls)
     {
         StringBuilder createCommand = new StringBuilder("CREATE TABLE IF NOT EXISTS " + cls.getSimpleName() + "(id int PRIMARY KEY");
 
-        for(Map.Entry<String, String> entry : toSQLFormat(cls).entrySet())
-        {
-            String mapKey = entry.getKey();
-            String mapValue = entry.getValue();
+        Field[] fields = cls.getDeclaredFields();
 
-            if(!mapKey.equals("id"))
-                createCommand.append(", ").append(mapKey).append(" ").append(mapValue);
+        for(Field field : fields)
+        {
+            String name = field.getName();
+            if(!name.equals("id"))
+                createCommand.append(", ").append(name).append(" varchar(100)");
         }
 
         createCommand.append(")");
@@ -72,18 +51,6 @@ public class CRUDTemplate {
         }
     }
 
-    public void insertRow(String insertRowSQL)
-    {
-        Connection connection = DBConfig.getDBConnection();
-
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(insertRowSQL);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
     public List<ResultSet> getTable(Class cls)
     {
         String selectCommand = "SELECT * FROM " + cls.getSimpleName();
@@ -101,6 +68,18 @@ public class CRUDTemplate {
             throwables.printStackTrace();
         }
         return result;
+    }
+
+    public void insertRow(String insertRowSQL)
+    {
+        Connection connection = DBConfig.getDBConnection();
+
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(insertRowSQL);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     public void updateRow(String updateRowSQL)

@@ -90,7 +90,7 @@ public class library {
 
     public List<book> searchCategory(String category, List<book> listOfBooks)
     {
-        List<book> newListOfBooks = new ArrayList<book>();
+        List<book> newListOfBooks = new ArrayList<>();
         for(book x : listOfBooks)
         {
             book result = x.searchCategory(category);

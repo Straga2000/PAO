@@ -25,6 +25,19 @@ public class book implements Comparable<book> {
         counter++;
     }
 
+    public book(Integer id, String title, String author, String publisher, String genre, Integer numberOfPages)
+    {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.publisher = publisher;
+        this.genre = genre;
+        this.numberOfPages = numberOfPages;
+
+        if(this.id > counter)
+            counter = this.id;
+    }
+
     public book() {
         this.id = counter++;
     }
@@ -44,6 +57,10 @@ public class book implements Comparable<book> {
     }
 
     //Getter and setter start
+
+
+    public Integer getId() { return id; }
+
     public String getTitle() {
         return title;
     }
