@@ -1,14 +1,9 @@
 package libUtilities;
-
-import java.awt.event.MouseAdapter;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class book implements Comparable<book> {
 
-    private static Integer counter = 0;
+    private static Integer counter = 1;
     private Integer id;
 
     protected String title = "", author = "", publisher = "", genre = "";

@@ -16,14 +16,14 @@ public class CRUDTemplate {
 
     public void createTable(Class cls)
     {
-        StringBuilder createCommand = new StringBuilder("CREATE TABLE IF NOT EXISTS " + cls.getSimpleName() + "(id int PRIMARY KEY");
+        StringBuilder createCommand = new StringBuilder("CREATE TABLE IF NOT EXISTS " + cls.getSimpleName() + "(id int PRIMARY KEY AUTO_INCREMENT");
 
         Field[] fields = cls.getDeclaredFields();
 
         for(Field field : fields)
         {
             String name = field.getName();
-            if(!name.equals("id"))
+            if(!name.equals("id") && !name.equals("counter"))
                 createCommand.append(", ").append(name).append(" varchar(100)");
         }
 

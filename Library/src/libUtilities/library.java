@@ -4,11 +4,22 @@ import java.util.*;
 
 public class library {
 
+    private static library libraryInstance = null;
     private List<reader> users = new ArrayList<>();
     private List<book> books = new ArrayList<>();
     private Map<String, section> sectionByGenre = new HashMap<String, section>();
     private Map<String, author> sectionByAuthor = new HashMap<String, author>();
     private List<action> controlLog = new ArrayList<>();
+
+    private library(){}
+
+    public static library getInstance()
+    {
+        if (libraryInstance == null)
+            libraryInstance = new library();
+
+        return libraryInstance;
+    }
 
     ////we need to create a map of author name with his books
     public Map<String, author> divideBooksByAuthor(List<book> listOfBooks)

@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Scanner scan = new Scanner(System.in);  // Create a Scanner object
-        library Lib = new library();
+        library Lib = library.getInstance();
 
         //addNewBook(scan, Lib);
 

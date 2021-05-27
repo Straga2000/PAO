@@ -2,7 +2,6 @@ package IODB;
 
 import libUtilities.book;
 
-import javax.swing.*;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.*;
@@ -44,7 +43,7 @@ public class CRUDBooks extends CRUDTemplate {
     public void insertRow(book newBook) throws IllegalAccessException {
 
         StringBuilder insertRowCommand = new StringBuilder("INSERT INTO ");
-        StringBuilder values = new StringBuilder(" VALUES(null, ");
+        StringBuilder values = new StringBuilder(" VALUES(");
 
         insertRowCommand.append(className).append("(");
 
@@ -84,7 +83,7 @@ public class CRUDBooks extends CRUDTemplate {
         {
             String name = field.getName();
             String value = field.get(newBook).toString();
-            if (!name.equals("id"))
+            if (!name.equals("id") && !name.equals("counter"))
                 updateRowCommand.append(name).append("= ").append('\'').append(value).append('\'');
         }
 
